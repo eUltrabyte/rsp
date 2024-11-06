@@ -2,28 +2,24 @@
 #ifndef RSP_HEADER
 #define RSP_HEADER
 
-#if defined(_WIN32)
-    #include <winsock2.h>
-    #include <io.h>
-    #pragma comment(lib, "ws2_32.lib")
+#include "Platform.hpp"
 
-    #define RSP_WINDOWS
-#elif defined(__linux__)
-    #include <sys/socket.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
+namespace rsp {
+    class App {
+    public:
+        App();
+        virtual ~App() = default;
 
-    #define RSP_LINUX
-#else
-    #error "rsp >> error - unknown operating system"
-#endif
+        virtual uint16_t& GetPort();
+        virtual std::string& GetIP();
+        virtual std::string& GetConfigName();
 
-#include <stdlib.h>
-#include <stdio.h>
+    private:
+        uint16_t m_port;
+        std::string m_ip;
+        std::string m_configName;
 
-#include <iostream>
-#include <string>
-#include <filesystem>
-#include <fstream>
+    };
+};
 
 #endif
