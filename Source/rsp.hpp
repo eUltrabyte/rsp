@@ -3,6 +3,7 @@
 #define RSP_HEADER
 
 #include "Platform.hpp"
+#include "Config.hpp"
 
 namespace rsp {
     class App {
@@ -10,14 +11,14 @@ namespace rsp {
         App();
         virtual ~App() = default;
 
+        virtual Config* GetConfig();
         virtual uint16_t& GetPort();
         virtual std::string& GetIP();
-        virtual std::string& GetConfigName();
 
     private:
+        std::unique_ptr<Config> m_config;
         uint16_t m_port;
         std::string m_ip;
-        std::string m_configName;
 
     };
 };

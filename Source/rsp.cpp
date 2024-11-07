@@ -3,24 +3,18 @@
 
 namespace rsp {
     App::App()
-    : m_port(3388), m_ip("127.0.0.1"), m_configName("default.cfg") {
-        if(std::filesystem::exists(m_configName)) {
-            std::ifstream file(m_configName);
-            std::string line;
-            if(file.is_open()) {
-                while(std::getline(file, line)) {
-                    if(line.find("port") != std::string::npos) {
-                        m_port = std::abs(std::atoi(line.substr(5, line.length()).c_str()));
-                        std::cout << "rsp >> port - " << m_port << '\n';
-                    } else if(line.find("ip") != std::string::npos) {
-                        m_ip = line.substr(3, line.length());
-                        std::cout << "rsp >> ip - " << m_ip << '\n';
-                    }
-                }
+    : m_port(3388), m_ip("127.0.0.1") {
+        m_config = std::make_unique<Config>("default.cfg");
 
-                file.close();
-            }
-        }
+        m_port = std::abs(std::atoi(m_config->Get("port").c_str()));
+        std::cout << "rsp >> port - " << m_port << '\n';
+
+        m_ip = m_config->Get("ip");
+        std::cout << "rsp >> ip - " << m_ip << '\n';
+    }
+
+    Config* App::GetConfig() {
+        return m_config.get();
     }
 
     uint16_t& App::GetPort() {
@@ -29,10 +23,6 @@ namespace rsp {
     
     std::string& App::GetIP() {
         return m_ip;
-    }
-    
-    std::string& App::GetConfigName() {
-        return m_configName;
     }
 };
 

@@ -8,6 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
     Source/Platform.hpp
+    Source/Config.hpp
+    Source/Config.cpp
     Source/rsp.hpp
     Source/rsp.cpp
 )
