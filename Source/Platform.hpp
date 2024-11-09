@@ -28,5 +28,14 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <chrono>
+
+#if defined(RSP_DEBUG)
+    #define RSP_LOG(x) { std::cout << "rsp [log] >> " << x << '\n'; }
+    #define RSP_ERROR(x) { std::cout << "rsp [error] >> " << x << '\n'; }
+#else
+    #define RSP_LOG(x) 
+    #define RSP_ERROR(x)
+#endif
 
 #endif

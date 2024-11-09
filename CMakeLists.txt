@@ -10,6 +10,10 @@ add_executable(${PROJECT_NAME}
     Source/Platform.hpp
     Source/Config.hpp
     Source/Config.cpp
+    Source/Socket.hpp
+    Source/Socket.cpp
     Source/rsp.hpp
     Source/rsp.cpp
 )
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:RSP_DEBUG> $<$<CONFIG:RelWithDebInfo>:RSP_DEBUG>)
