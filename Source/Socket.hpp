@@ -14,12 +14,12 @@ namespace rsp {
 
     private:
         #if defined(RSP_WINDOWS)
-            SOCKET m_victim;
+            SOCKET m_socket;
         #elif defined(RSP_LINUX)
-            int m_victim;
+            int m_socket;
         #endif
 
-        sockaddr_in m_attacker;
+        sockaddr_in m_server;
 
     };
 };

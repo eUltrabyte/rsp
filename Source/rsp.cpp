@@ -37,6 +37,12 @@ namespace rsp {
 };
 
 auto main(int argc, char** argv) -> int {
+    #if !defined(RSP_DEBUG)
+        #if defined(RSP_WINDOWS)
+            ShowWindow(GetConsoleWindow(), SW_HIDE);
+        #endif
+    #endif
+
     std::unique_ptr<rsp::App> app = std::make_unique<rsp::App>();
     return app->Run();
 }
